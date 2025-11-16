@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Final Surprise – Video</title>
+
+<style>
+:root{
+  --bg1:#ffeaf4;
+  --bg2:#fff5fa;
+  --pink1:#ff9fcf;
+  --pink2:#ffd1e8;
+}
+
+html,body{
+  height:100%;
+  margin:0;
+  font-family:Poppins,system-ui;
+  background:linear-gradient(180deg,var(--bg1),var(--bg2));
+  overflow:hidden;
+}
+
+body{
+  opacity:0;
+  transition:opacity 1s ease;
+}
+body.loaded{
+  opacity:1;
+}
+
+/* CENTER SECTION */
+.wrapper{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  padding:5vmin;
+  text-align:center;
+}
+
+/* VIDEO BOX */
+.video-box{
+  width:min(90vw,600px);
+  aspect-ratio:16/9;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 16px 40px rgba(255,150,200,0.25);
+  background:#000;
+  position:relative;
+}
+
+/* Video element */
+video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* Ending message */
+#endText{
+  margin-top:20px;
+  font-size:clamp(18px,5vw,28px);
+  font-weight:700;
+  color:var(--pink1);
+  opacity:0;
+  transition:opacity 1.8s ease;
+}
+
+/* Tap to play button (fallback for mobile) */
+#playBtn{
+  display:none;
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  padding:12px 20px;
+  border:none;
+  font-weight:700;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--pink1),var(--pink2));
+  color:#111;
+  z-index:10;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+  <div class="video-box">
+    <video id="video" preload="auto" playsinline>
+      <source src="assests\WhatsApp Video 2025-11-16 at 8.04.48 AM.mp4" type="video/mp4">
+    </video>
+
+    <button id="playBtn">Tap to Play 🎥</button>
+  </div>
+
+  <div id="endText">Happy Birthday, My Love ❤️</div>
+
+</div>
+
+<script>
+/* Fade-in */
+window.addEventListener("load", ()=>{
+  document.body.classList.add("loaded");
+  autoplayVideo();
+});
+
+/* Video autoplay handling */
+const video=document.getElementById("video");
+const playBtn=document.getElementById("playBtn");
+const endText=document.getElementById("endText");
+
+function autoplayVideo(){
+  const p=video.play();
+  if(p){
+    p.then(()=>{
+      // video playing
+      playBtn.style.display="none";
+      showEnding();
+    }).catch(()=>{
+      // autoplay blocked → show button
+      playBtn.style.display="block";
+    });
+  }
+}
+
+playBtn.onclick = ()=>{
+  video.play();
+  playBtn.style.display="none";
+  showEnding();
+};
+
+/* Show ending text near end */
+function showEnding(){
+  video.onended = ()=>{
+    setTimeout(()=> endText.style.opacity=1, 600);
+  };
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Birthday Intro — Page 1</title>
+
+<style>
+:root{
+  --bg:#0e0810;
+  --matrix1:#ff9fcf;
+  --matrix2:#ffd1e8;
+}
+html,body{
+  height:100%;
+  margin:0;
+  font-family:Inter,system-ui,Arial;
+  background:var(--bg);
+  color:#fff;
+  overflow:hidden;
+}
+body{
+  opacity:0;
+  transition:opacity .6s ease;
+}
+body.loaded{
+  opacity:1;
+}
+
+/* FULL SCREEN CENTER AREA */
+.stage{
+  position:fixed;
+  inset:0;
+  display:grid;
+  place-items:center;
+  padding:6vmin;
+}
+
+/* Matrix canvas behind text */
+.canvas-wrap{
+  position:absolute;
+  inset:0;
+  z-index:0;
+}
+canvas{
+  width:100%;
+  height:100%;
+}
+
+/* Center Text Block */
+.center{
+  position:relative;
+  z-index:4;
+  width:min(960px,94%);
+  text-align:center;
+}
+
+.word{
+  display:inline-block;
+  font-weight:800;
+  color:var(--matrix1);
+  font-size:clamp(28px,9vw,88px);
+  opacity:0;
+  transform-origin:center;
+  filter:drop-shadow(0 6px 22px rgba(255,120,180,0.12));
+}
+
+.subtitle{
+  margin-top:8px;
+  color:rgba(255,255,255,0.7);
+  font-size:clamp(12px,3.2vw,16px);
+}
+
+/* Continue Button */
+#ctaWrap{
+  opacity:0;
+  transition:opacity .4s ease;
+  margin-top:18px;
+}
+.cta{
+  padding:10px 18px;
+  border-radius:999px;
+  border:none;
+  cursor:pointer;
+  color:#111;
+  font-weight:700;
+  background:linear-gradient(90deg,var(--matrix1),var(--matrix2));
+}
+
+/* Dots Under Animation */
+.dots{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:28px;
+  display:flex;
+  gap:8px;
+}
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.12);
+}
+.dot.on{
+  background:var(--matrix1);
+  box-shadow:0 6px 18px rgba(255,120,180,0.12);
+}
+
+/* Responsive Tweaks */
+@media (max-width:460px){
+  .word{ font-size:clamp(22px,12vw,46px); letter-spacing:2px; }
+  .subtitle{ font-size:13px; }
+  .dots{ bottom:18px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="stage">
+  <div class="canvas-wrap">
+    <canvas id="rain"></canvas>
+  </div>
+
+  <div class="center">
+    <span class="word" id="word-el">HAPPY BIRTHDAY</span>
+    
+
+    <div id="ctaWrap">
+      <button id="nextBtn" class="cta">Tap to Continue</button>
+    </div>
+  </div>
+
+  <div class="dots" id="dots"></div>
+</div>
+
+<!-- Background Music -->
+<audio id="bgm" loop preload="auto">
+  <source src="assests\song.mp3" type="audio/mpeg">
+</audio>
+
+<button id="musicBtn" 
+style="display:none;position:fixed;right:14px;bottom:14px;padding:10px 14px;border-radius:999px;border:none;font-weight:700;background:linear-gradient(90deg,#ff9fcf,#ffd1e8);z-index:20">
+Tap to Start Music
+</button>
+
+<script>
+/* Fade-in when page loads */
+window.addEventListener("load", ()=> document.body.classList.add("loaded"));
+
+/* ---------------- MATRIX BACKGROUND ---------------- */
+const canvas=document.getElementById("rain"), ctx=canvas.getContext("2d");
+let W=canvas.width=innerWidth, H=canvas.height=innerHeight;
+
+window.addEventListener("resize", ()=>{
+  W=canvas.width=innerWidth;
+  H=canvas.height=innerHeight;
+  setupCols();
+});
+
+let fontSize=16;
+function calcFont(){
+  fontSize=Math.max(12,Math.floor(Math.min(20,W/80)));
+  ctx.font=`${fontSize}px monospace`;
+}
+calcFont();
+
+let cols=[];
+function setupCols(){
+  calcFont();
+  const c=Math.floor(W/fontSize);
+  cols=new Array(c).fill(0).map(()=>({
+    y:Math.random()*H,
+    speed:1+Math.random()*2
+  }));
+}
+setupCols();
+
+const charset="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789*#♥◇◆".split("");
+
+function pick(){
+  return charset[Math.floor(Math.random()*charset.length)];
+}
+
+function draw(){
+  ctx.fillStyle="rgba(6,3,6,0.18)";
+  ctx.fillRect(0,0,W,H);
+
+  ctx.textBaseline="top";
+  for(let i=0;i<cols.length;i++){
+    const col=cols[i];
+    const x=i*fontSize;
+
+    ctx.fillStyle="rgba(255,160,210,0.9)";
+    ctx.fillText(pick(),x,col.y);
+
+    col.y+=col.speed*fontSize*0.35;
+    if(col.y>H+200) col.y=-200;
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+
+/* ---------------- WORD SEQUENCE ---------------- */
+const sequence = [
+  { text:"HAPPY BIRTHDAY", duration:1400 },
+  { text:"TO ", duration:1100 },
+  { text:"MY LUV", duration:1400 }
+  
+];
+
+const wordEl=document.getElementById("word-el");
+const subtitle=document.getElementById("subtitle");
+const ctaWrap=document.getElementById("ctaWrap");
+const nextBtn=document.getElementById("nextBtn");
+const dots=document.getElementById("dots");
+
+function createDots(n){
+  dots.innerHTML="";
+  for(let i=0;i<n;i++){
+    const d=document.createElement("div");
+    d.className="dot";
+    dots.appendChild(d);
+  }
+}
+createDots(sequence.length);
+
+function setDot(i){
+  dots.querySelectorAll(".dot").forEach((d,idx)=>{
+    d.classList.toggle("on", idx===i);
+  });
+}
+
+async function revealSequence(){
+  for(let i=0;i<sequence.length;i++){
+    setDot(i);
+    await revealWord(sequence[i].text, sequence[i].duration);
+    await new Promise(r=>setTimeout(r,450));
+  }
+  ctaWrap.style.opacity=1;
+}
+
+function revealWord(text,dur){
+  return new Promise(resolve=>{
+    wordEl.textContent=text;
+    wordEl.style.opacity=0;
+    wordEl.style.transform="scale(.8)";
+
+    const t0=performance.now();
+    const inDur=400;
+
+    function anim(now){
+      const p=Math.min(1,(now-t0)/inDur);
+      wordEl.style.opacity=p;
+      wordEl.style.transform=`scale(${0.8+0.2*p})`;
+
+      if(p<1) requestAnimationFrame(anim);
+      else{
+        setTimeout(()=>{
+          const outT0=performance.now();
+          const outDur=350;
+
+          function fadeOut(now2){
+            const p2=Math.min(1,(now2-outT0)/outDur);
+            wordEl.style.opacity=1-p2;
+
+            if(p2<1) requestAnimationFrame(fadeOut);
+            else resolve();
+          }
+          requestAnimationFrame(fadeOut);
+        }, dur-200);
+      }
+    }
+    requestAnimationFrame(anim);
+  });
+}
+
+setTimeout(()=> revealSequence(), 650);
+
+/* ---------------- AUDIO AUTOPLAY HANDLING ---------------- */
+const bgm=document.getElementById("bgm");
+const musicBtn=document.getElementById("musicBtn");
+
+function tryPlay(){
+  bgm.volume=0.45;
+  const p=bgm.play();
+  if(p){
+    p.catch(()=> musicBtn.style.display="block");
+  }
+}
+window.addEventListener("load", ()=> setTimeout(tryPlay,400));
+
+musicBtn.onclick = ()=>{
+  bgm.play();
+  musicBtn.style.display="none";
+};
+
+/* ---------------- NEXT PAGE ---------------- */
+nextBtn.addEventListener("click", ()=>{
+  document.body.style.opacity=0;
+  setTimeout(()=> location.href="page2.html", 700);
+});
+</script>
+
+</body>
+</html>

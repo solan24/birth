@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Make a Wish – Candle Page</title>
+
+<style>
+:root{
+  --bg1:#fff5fa;
+  --bg2:#ffeaf4;
+  --pink1:#ff9fcf;
+  --pink2:#ffd1e8;
+  --smoke:#d9d9d9;
+}
+html,body{
+  margin:0;
+  height:100%;
+  font-family:Poppins,system-ui;
+  background:linear-gradient(180deg,var(--bg1),var(--bg2));
+  overflow:hidden;
+}
+body{
+  opacity:0;
+  transition:opacity 1s ease;
+}
+body.loaded{
+  opacity:1;
+}
+
+/* Center layout */
+.stage{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:5vmin;
+}
+
+/* Titles */
+h1{
+  font-size:clamp(26px,7vw,42px);
+  font-weight:800;
+  color:var(--pink1);
+  margin-bottom:8px;
+}
+p{
+  font-size:clamp(14px,4vw,18px);
+  color:#6b5f66;
+  margin:2px 0 14px;
+}
+
+/* Countdown Number */
+#countdown{
+  font-size:clamp(40px,12vw,70px);
+  font-weight:700;
+  color:var(--pink1);
+  margin-top:10px;
+}
+
+/* Cake */
+.cake{
+  position:relative;
+  width:clamp(180px,60vw,240px);
+  height:clamp(120px,40vw,160px);
+  background:#ffe0ed;
+  border-radius:18px;
+  margin-top:20px;
+  box-shadow:0 12px 40px rgba(255,120,170,.25);
+}
+.cake::before{
+  content:"";
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:35%;
+  background:#ffc5dd;
+  border-radius:0 0 18px 18px;
+}
+
+/* Candles */
+.candles{
+  position:absolute;
+  top:-40px;
+  left:0; right:0;
+  display:flex;
+  justify-content:center;
+  gap:clamp(16px,8vw,28px);
+}
+.candle{
+  width:clamp(12px,3vw,14px);
+  height:clamp(38px,10vw,45px);
+  background:#fff;
+  border-radius:8px;
+  position:relative;
+}
+
+/* Flames */
+.flame{
+  width:clamp(14px,5vw,20px);
+  height:clamp(18px,6vw,24px);
+  background:radial-gradient(circle,#fff6ce,#ffcf76);
+  border-radius:50%;
+  position:absolute;
+  top:-22px;
+  left:50%;
+  transform:translateX(-50%);
+  animation:flicker .18s infinite alternate;
+}
+@keyframes flicker{
+  0%{transform:translateX(-50%) scale(1);}
+  100%{transform:translateX(-48%) scale(1.15);}
+}
+
+/* Smoke */
+.smoke{
+  width:clamp(12px,4vw,18px);
+  height:clamp(12px,4vw,18px);
+  border-radius:50%;
+  background:var(--smoke);
+  position:absolute;
+  top:-22px;
+  left:50%;
+  opacity:0;
+  transform:translateX(-50%) translateY(10px);
+  animation:smokeRise 1.5s ease forwards;
+}
+@keyframes smokeRise{
+  0%{opacity:.7; transform:translate(-50%,10px) scale(.6);}
+  100%{opacity:0; transform:translate(-50%,-40px) scale(1.5);}
+}
+
+/* Wish text */
+#wishText{
+  margin-top:22px;
+  font-size:clamp(15px,4vw,20px);
+  font-weight:600;
+  color:var(--pink1);
+  opacity:0;
+  transition:opacity 1.2s ease;
+}
+
+/* Timer */
+#wishTimer{
+  margin-top:12px;
+  font-size:clamp(13px,3.2vw,16px);
+  color:#7a6772;
+  opacity:0;
+  transition:opacity .5s;
+}
+
+/* Fallback music button */
+#musicBtn{
+  display:none;
+  position:fixed;
+  right:14px;
+  bottom:14px;
+  padding:10px 16px;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--pink1),var(--pink2));
+  border:none;
+  font-weight:700;
+  color:#111;
+  z-index:20;
+}
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <h1>Make a Wish 🕯️</h1>
+  <p>Get ready…</p>
+
+  <div id="countdown">3</div>
+
+  <div class="cake">
+    <div class="candles" id="candles">
+      <div class="candle"><div class="flame"></div></div>
+      <div class="candle"><div class="flame"></div></div>
+      <div class="candle"><div class="flame"></div></div>
+    </div>
+  </div>
+
+  <div id="wishTimer"></div>
+  <div id="wishText">✨ Your wish has been sent to the universe ✨</div>
+</div>
+
+<!-- Music -->
+<audio id="bgm" loop>
+  <source src="assests\soft music.mp3">
+</audio>
+<button id="musicBtn">Tap to Start Music 🎵</button>
+
+<script>
+window.onload = ()=>{
+  document.body.classList.add("loaded");
+  tryPlay();
+  startCountdown();
+};
+
+/* Music autoplay */
+const bgm=document.getElementById("bgm");
+const musicBtn=document.getElementById("musicBtn");
+
+function tryPlay(){
+  bgm.volume=0.5;
+  const p=bgm.play();
+  if(p) p.catch(()=> musicBtn.style.display="block");
+}
+musicBtn.onclick = ()=>{
+  bgm.play();
+  musicBtn.style.display="none";
+};
+
+/* Countdown 3 → 2 → 1 */
+let count = 3;
+const counter = document.getElementById("countdown");
+
+function startCountdown(){
+  const interval = setInterval(()=>{
+    count--;
+    counter.textContent = count;
+
+    if(count === 0){
+      clearInterval(interval);
+      counter.textContent = "Make a wish…";
+
+      setTimeout(()=>{
+        counter.style.opacity = 0;
+        startWishTimer();
+      }, 900);
+    }
+  },1000);
+}
+
+/* 40-second wishing timer */
+let wishTime = 10;
+const wishTimer = document.getElementById("wishTimer");
+
+function startWishTimer(){
+  wishTimer.style.opacity = 1;
+  wishTimer.textContent = `Time left: ${wishTime}s`;
+
+  const t = setInterval(()=>{
+    wishTime--;
+    wishTimer.textContent = `Time left: ${wishTime}s`;
+
+    if(wishTime <= 0){
+      clearInterval(t);
+      blowCandles();
+    }
+  }, 1000);
+}
+
+/* Blow candles automatically */
+function blowCandles(){
+  const candles = document.querySelectorAll(".candle");
+
+  candles.forEach(c=>{
+    const flame = c.querySelector(".flame");
+    if(flame){
+      flame.remove();
+      const sm = document.createElement("div");
+      sm.classList.add("smoke");
+      c.appendChild(sm);
+    }
+  });
+
+  wishText.style.opacity = 1;
+  wishTimer.textContent = "Sending your wish…";
+
+  setTimeout(()=>{
+    document.body.style.opacity = 0;
+    setTimeout(()=> location.href="video.html", 1000);
+  }, 3500);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Page 3 — Special Video Surprise</title>
+
+<style>
+:root{
+  --bg1:#ffeaf4;
+  --bg2:#fff5fa;
+  --pink1:#ff9fcf;
+  --pink2:#ffd1e8;
+}
+
+html,body{
+  height:100%;
+  margin:0;
+  font-family:Poppins,system-ui;
+  background:linear-gradient(180deg,var(--bg1),var(--bg2));
+  overflow:hidden;
+}
+
+body{
+  opacity:0;
+  transition:opacity .9s ease;
+}
+body.loaded{
+  opacity:1;
+}
+
+.wrapper{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  padding:5vmin;
+  text-align:center;
+}
+
+.header{
+  font-size:clamp(20px,6vw,34px);
+  font-weight:800;
+  margin-bottom:16px;
+  background:linear-gradient(90deg,var(--pink1),var(--pink2));
+  padding:8px 20px;
+  border-radius:12px;
+  color:#111;
+  box-shadow:0 10px 30px rgba(255,150,200,0.2);
+}
+
+/* video */
+.video-box{
+  width:min(90vw,600px);
+  aspect-ratio:16/9;
+  border-radius:16px;
+  overflow:hidden;
+  background:#000;
+  box-shadow:0 16px 40px rgba(0,0,0,0.25);
+  position:relative;
+}
+
+video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+#playBtn{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  padding:12px 20px;
+  border:none;
+  border-radius:999px;
+  font-weight:700;
+  background:linear-gradient(90deg,var(--pink1),var(--pink2));
+  color:#111;
+  display:none;
+  z-index:10;
+}
+
+/* next button */
+#nextBtn{
+  margin-top:22px;
+  padding:12px 20px;
+  border:none;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--pink1),var(--pink2));
+  font-weight:800;
+  color:#111;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .6s ease;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+  <div class="header">A Little Surprise Video 🎥💗</div>
+
+  <div class="video-box">
+    <video id="video3" preload="auto" playsinline>
+      <source src="assests\WhatsApp Video 2025-11-14 at 11.57.07 PM.mp4" type="video/mp4">
+    </video>
+
+    <button id="playBtn">Tap to Play ▶️</button>
+  </div>
+
+  <button id="nextBtn">Continue</button>
+</div>
+
+<script>
+window.addEventListener("load", ()=>{
+  document.body.classList.add("loaded");
+  tryAutoPlay();
+});
+
+const vid = document.getElementById("video3");
+const playBtn = document.getElementById("playBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+/* Try autoplay */
+function tryAutoPlay(){
+  const attempt = vid.play();
+  if(attempt){
+    attempt.catch(()=>{
+      playBtn.style.display="block";
+    });
+  }
+}
+
+/* tap to play fallback */
+playBtn.onclick = ()=>{
+  vid.play();
+  playBtn.style.display="none";
+};
+
+/* when video ends → show continue */
+vid.onended = ()=>{
+  nextBtn.style.opacity=1;
+  nextBtn.style.pointerEvents="auto";
+};
+
+/* go to next page */
+nextBtn.onclick = ()=>{
+  document.body.style.opacity=0;
+  setTimeout(()=> location.href="last.html", 800);
+};
+</script>
+
+</body>
+</html>

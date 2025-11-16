@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Surprise Book – Page 2</title>
+
+<style>
+:root{
+  --pink1:#ff9fcf;
+  --pink2:#ffd1e8;
+  --bg1:#fff7fb;
+  --text:#4b3b45;
+}
+html,body{
+  height:100%;
+  margin:0;
+  font-family:Poppins,system-ui;
+  background:linear-gradient(180deg,var(--bg1),#fdeaf4);
+  -webkit-font-smoothing:antialiased;
+}
+body{
+  opacity:0;
+  transition:opacity .6s;
+}
+body.loaded{
+  opacity:1;
+}
+
+.wrapper{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  padding:5vmin;
+}
+
+/* BOOK CONTAINER */
+.book{
+  width:min(540px,92vw);
+  aspect-ratio:4/3;
+  max-width:600px;
+  position:relative;
+  perspective:1500px;
+  cursor:pointer;
+  margin-bottom:20px;
+}
+
+/* BOOK COVER */
+.cover{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg,var(--pink1),var(--pink2));
+  border-radius:16px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-weight:700;
+  color:#fff;
+  font-size:clamp(16px,4vw,28px);
+  transition:transform 1s ease;
+  transform-origin:left;
+  box-shadow:0 18px 50px rgba(255,120,180,0.2);
+}
+
+/* LEFT/RIGHT PAGE */
+.pages{
+  position:absolute;
+  inset:0;
+  background:#fff;
+  border-radius:16px;
+  display:flex;
+  opacity:0;
+  transition:opacity .5s .25s;
+}
+
+.page{
+  flex:1;
+  padding:clamp(12px,3vw,24px);
+  font-family:'Handlee',cursive;
+  font-size:clamp(15px,3.7vw,20px);
+  line-height:1.55;
+  color:var(--text);
+}
+
+/* TEDDY POP-UP */
+.teddy{
+  position:absolute;
+  left:50%;
+  top:-12%;
+  transform:translateX(-50%) scale(0);
+  width:clamp(90px,22vw,140px);
+  transition:transform .9s ease;
+}
+
+/* ANIMATED STATES */
+.book.open .cover{
+  transform:rotateY(-160deg);
+}
+.book.open .pages{
+  opacity:1;
+}
+.book.open ~ .teddy{
+  transform:translateX(-50%) scale(1);
+}
+
+/* NEXT BUTTON */
+#nextBtn{
+  opacity:0;
+  pointer-events:none;
+  padding:12px 20px;
+  border:none;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--pink1),var(--pink2));
+  color:#111;
+  font-weight:700;
+  transition:opacity .5s;
+}
+
+/* MUSIC BUTTON */
+#musicBtn{
+  display:none;
+  position:fixed;
+  right:16px;
+  bottom:16px;
+  z-index:30;
+  padding:10px 16px;
+  border:none;
+  border-radius:999px;
+  background:linear-gradient(90deg,#ff9fcf,#ffd1e8);
+  font-weight:700;
+  color:#111;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+  
+  <img src="assets/images/teddy.png" class="teddy" id="teddy">
+
+  <div class="book" id="book">
+    <div class="cover">Tap to Open</div>
+
+    <div class="pages">
+      <div class="page">
+        Dear Meri Sannuuu…💗<br><br>
+        You are the softest part of my life.  
+        Even when days feel heavy, you still shine.
+      </div>
+
+      <div class="page">
+        I am so grateful for you… for your love…  
+        and for simply being YOU.<br><br>
+        Happy Birthday, my love. ❤️
+      </div>
+    </div>
+  </div>
+
+  <button id="nextBtn">Continue</button>
+
+</div>
+
+<!-- BACKGROUND MUSIC (added) -->
+<audio id="bgm" loop preload="auto">
+  <source src="assests\song.mp3" type="audio/mpeg">
+</audio>
+
+<button id="musicBtn">Tap to Start Music 🎵</button>
+
+<script>
+/* Fade-in */
+window.addEventListener("load", ()=>{
+  document.body.classList.add("loaded");
+  tryPlayMusic();
+});
+
+/* MUSIC AUTOPLAY (same as page1) */
+const bgm = document.getElementById("bgm");
+const musicBtn = document.getElementById("musicBtn");
+
+function tryPlayMusic(){
+  bgm.volume = 0.45;
+  const playPromise = bgm.play();
+  if(playPromise){
+    playPromise.catch(()=> musicBtn.style.display = "block");
+  }
+}
+
+musicBtn.onclick = ()=>{
+  bgm.play();
+  musicBtn.style.display="none";
+};
+
+/* Book interaction */
+const book = document.getElementById("book");
+const nextBtn = document.getElementById("nextBtn");
+let opened = false;
+
+book.addEventListener("click", ()=>{
+  if(opened) return;
+  opened = true;
+  book.classList.add("open");
+
+  /* Show next button after animation */
+  setTimeout(()=>{
+    nextBtn.style.opacity = 1;
+    nextBtn.style.pointerEvents = "auto";
+  }, 1400);
+});
+
+/* Next page */
+nextBtn.addEventListener("click", ()=>{
+  document.body.style.opacity = 0;
+  setTimeout(()=> location.href="page3.html", 700);
+});
+</script>
+
+</body>
+</html>

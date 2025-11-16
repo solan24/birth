@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flower Bloom – Page 6</title>
+
+<style>
+:root{
+  --bg1:#ffeaf4;
+  --bg2:#fff5fa;
+  --pink1:#ff9fcf;
+  --pink2:#ffd1e8;
+}
+
+html,body{
+  margin:0;
+  height:100%;
+  font-family:Poppins,system-ui;
+  background:linear-gradient(180deg,var(--bg1),var(--bg2));
+  overflow:hidden;
+}
+body{
+  opacity:0;
+  transition:opacity 1s ease;
+}
+body.loaded{
+  opacity:1;
+}
+
+/* CENTER MESSAGE */
+.center{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:90%;
+  text-align:center;
+  z-index:10;
+}
+
+h1{
+  font-size:clamp(22px,7vw,40px);
+  color:var(--pink1);
+  font-weight:800;
+  margin:0 0 12px;
+}
+
+p{
+  font-size:clamp(14px,4vw,18px);
+  color:#5a4c55;
+  font-weight:400;
+  line-height:1.6;
+}
+
+/* CANVAS FOR BLOOMS */
+#flowers{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:1;
+}
+
+/* AUTO NEXT MESSAGE */
+#nextNote{
+  position:absolute;
+  bottom:24px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:clamp(13px,3.6vw,16px);
+  color:#7a6772;
+  opacity:.7;
+}
+
+/* Music button fallback */
+#musicBtn{
+  display:none;
+  position:fixed;
+  right:16px;
+  bottom:16px;
+  padding:10px 16px;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--pink1),var(--pink2));
+  border:none;
+  font-weight:700;
+  color:#111;
+  z-index:20;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="flowers"></canvas>
+
+<div class="center">
+  <h1>My Sannuuu… 🌸</h1>
+  <p>
+    Once again, Happy Birthday my luv…  
+    God bless you with everything your heart wishes.  
+    For every tear you cried because of me,  
+    for every moment I made you feel low…  
+    I am truly, deeply sorry. 💗  
+    You deserve only love, peace, and happiness.  
+    And I promise to give you all of that — always. 🥺💞
+  </p>
+</div>
+
+<div id="nextNote">Preparing something special…</div>
+
+<!-- music -->
+<audio id="bgm" loop>
+  <source src="assests\song.mp3" type="audio/mpeg">
+</audio>
+<button id="musicBtn">Tap to Start Music 🎵</button>
+
+<script>
+/* Fade-in on load */
+window.onload = ()=>{
+  document.body.classList.add("loaded");
+  tryPlay();
+  startAutoNext();
+};
+
+/* Music autoplay */
+const bgm=document.getElementById("bgm");
+const musicBtn=document.getElementById("musicBtn");
+
+function tryPlay(){
+  bgm.volume=0.45;
+  const p=bgm.play();
+  if(p) p.catch(()=> musicBtn.style.display="block");
+}
+musicBtn.onclick=()=>{
+  bgm.play();
+  musicBtn.style.display="none";
+};
+
+/* FLOWER BLOOM ANIMATION */
+const canvas=document.getElementById("flowers");
+const ctx=canvas.getContext("2d");
+
+let W=canvas.width=innerWidth;
+let H=canvas.height=innerHeight;
+
+window.addEventListener("resize",()=>{
+  W=canvas.width=innerWidth;
+  H=canvas.height=innerHeight;
+});
+
+const flowers=[];
+const petals=["🌸","🌺","💮","🌷","💗"];
+
+function bloom(){
+  const x=Math.random()*W;
+  const y=Math.random()*H;
+  const size=20+Math.random()*40;
+
+  flowers.push({
+    x,y,size,
+    char:petals[Math.floor(Math.random()*petals.length)],
+    alpha:0
+  });
+}
+
+function animate(){
+  ctx.clearRect(0,0,W,H);
+
+  for(let f of flowers){
+    f.alpha+=0.01;
+    ctx.globalAlpha=f.alpha;
+    ctx.font=`${f.size}px serif`;
+    ctx.fillText(f.char,f.x,f.y);
+  }
+
+  requestAnimationFrame(animate);
+}
+setInterval(bloom,260);
+animate();
+
+/* AUTO NEXT AFTER 10 SECONDS */
+function startAutoNext(){
+  setTimeout(()=>{
+    document.body.style.opacity=0;
+    setTimeout(()=> location.href="cake.html", 900);
+  }, 10000);
+}
+</script>
+
+</body>
+</html>
